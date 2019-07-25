@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/OlliJ5/Full-Stack-Open-Part3#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "morgan": "^1.9.1"
   },
