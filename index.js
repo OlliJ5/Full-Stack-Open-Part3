@@ -12,11 +12,13 @@ app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-morgan.token('body', (req, res) => JSON.stringify(req.body) )
+morgan.token('body', (req, res) => JSON.stringify(req.body))
 
 app.get('/info', (req, res) => {
   const date = new Date()
-  res.send(`<p>Phonebook has info of ${contacts.length} people</p>${date}`)
+  Person.find({}).then(persons => {
+    res.send(`<p>Phonebook has info of ${persons.length} people</p>${date}`)
+  })
 })
 
 app.get('/api/persons', (req, res) => {
@@ -44,22 +46,52 @@ app.post('/api/persons', (req, res) => {
   })
 })
 
-app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = contacts.find(contact => contact.id === id)
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person.toJSON())
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
+})
 
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
+
+  const person = {
+    name: body.name,
+    number: body.number
   }
+
+  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    .then(updated => {
+      res.json(updated.toJSON())
+    })
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  contacts = contacts.filter(contact => contact.id !== id)
-  res.status(204).end()
-})
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
+    return res.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
