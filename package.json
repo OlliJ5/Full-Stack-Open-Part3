@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "lint": "eslint .",
     "watch": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf build && cd ../Full-Stack-Open-2019/osa2/puhelinluettelo/ && npm run build --prod && cp -r build ../../../Full-Stack-Open-Part3/",
@@ -32,6 +33,7 @@
     "mquery": "^3.2.1"
   },
   "devDependencies": {
+    "eslint": "^5.16.0",
     "nodemon": "^1.19.1"
   }
 }
