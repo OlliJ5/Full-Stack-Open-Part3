@@ -24,6 +24,7 @@
   "homepage": "https://github.com/OlliJ5/Full-Stack-Open-Part3#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "mongoose": "^5.6.6",
     "morgan": "^1.9.1",
